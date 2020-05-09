@@ -8,7 +8,7 @@ const ImgPicker = (props) => {
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(
       Permissions.CAMERA,
-      Permissions.CAMERA
+      Permissions.CAMERA_ROLL
     );
     if (result.status !== "granted") {
       Alert.alert(
