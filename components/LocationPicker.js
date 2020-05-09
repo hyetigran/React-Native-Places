@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Button,
@@ -14,6 +14,17 @@ import Colors from "../constans/Colors";
 import MapPreview from "./MapPreview";
 
 const LocationPicker = (props) => {
+  const [pickedLocation, setPickedLocation] = useState();
+  const [isFetching, setIsFetching] = useState(false);
+  const mapPickedLocation = props.naviation.getParam("pickedLocation");
+  const { onLocationPicked } = props;
+
+  useEffect(() => {
+    if (mapPickedLocation) {
+      setPickedLocation(mapPickedLocation);
+      onLocationPicked(mapPickedLocation);
+    }
+  }, [mapPickedLocation, onLocationPicked]);
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.LOCATION);
     if (result.status !== "granted") {
@@ -27,8 +38,6 @@ const LocationPicker = (props) => {
     return true;
   };
   const getLocationHandler = async () => {
-    const [pickedLocation, setPickedLocation] = useState();
-    const [isFetching, setIsFetching] = useState(false);
     const hasPermission = await verifyPermissions();
     if (!hasPermission) {
       return;
@@ -39,6 +48,10 @@ const LocationPicker = (props) => {
         timeout: 5000,
       });
       setPickedLocation({
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
+      });
+      props.onLocationPicked({
         lat: location.coords.latitude,
         lng: location.coords.longitude,
       });
